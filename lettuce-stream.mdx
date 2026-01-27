@@ -1,0 +1,63 @@
+---
+title: "Lettuce Stream — Developer-Facing Description"
+description: "Technical overview of the Lettuce Stream multistreaming SaaS platform."
+---
+
+## Product overview
+
+Lettuce Stream is a web-based multistreaming SaaS platform that combines a modern marketing site with an authenticated streaming dashboard. It lets creators restream to multiple platforms (YouTube, Twitch, Kick) from a single workflow, while keeping onboarding and billing streamlined for self-serve subscriptions.
+
+## Architecture
+
+The system blends a static front end with serverless APIs and real-time streaming infrastructure:
+
+- **Frontend:** Vanilla HTML/CSS/JS for the marketing site, auth flows, and in-browser studio UI.
+- **Backend services:** Firebase Auth and Firestore for identity, user data, and secure token storage.
+- **Serverless APIs:** OAuth callbacks, runtime config, and backend glue for auth and channel linking.
+- **Streaming relay (in development):** Node-based WebSocket relay that converts MediaRecorder chunks to RTMP via FFmpeg for YouTube Live and other ingest endpoints.
+
+## Core flows
+
+### Authentication and onboarding
+
+Users follow a Stripe-inspired sign-up/sign-in experience, backed by Firebase Auth. Authenticated sessions unlock the streaming dashboard, where user data and channel connections are stored in Firestore.
+
+### Subscriptions and billing
+
+Stripe manages subscription tiers and checkout sessions. The UI exposes plan selection and payment management within the dashboard.
+
+### OAuth multistream linking
+
+Creators connect YouTube and Twitch via serverless OAuth endpoints, which store channel secrets securely using Firebase Admin SDK capabilities.
+
+### Go-live pipeline
+
+The browser-based studio captures media with MediaRecorder, then forwards chunks to the WebSocket relay. The relay transcodes and pushes RTMP to supported streaming platforms (in progress).
+
+## Key capabilities and modules
+
+- **Marketing + Auth UX:** Responsive landing pages, pricing, and polished sign-up/sign-in flows.
+- **Streaming Studio & Dashboard:** Multistream controls, platform toggles, and storage views for past sessions.
+- **Firebase Integration:** Auth, Firestore data access, and server-side Admin SDK for secure token handling.
+- **Stripe Payments:** Subscription tiers, checkout session creation, and billing management.
+- **OAuth Multistreaming:** Serverless endpoints for channel linking and token storage.
+- **Live Relay (under development):** WebSocket bridge from browser media capture to RTMP ingest via FFmpeg.
+- **Automation:** Scheduled spotlight scanning scripts that pull upcoming events from YouTube/Twitch/Kick and persist them to Firestore.
+
+## Tech stack summary
+
+- **Frontend:** HTML5, CSS3, vanilla JS
+- **Backend:** Firebase Auth + Firestore, serverless API routes
+- **Payments:** Stripe
+- **Streaming infra (under development):** WebSocket relay + FFmpeg → RTMP
+- **Automation:** Node scripts + scheduled CI jobs
+
+## Deployment
+
+- **Hosting:** Firebase Hosting for the static frontend, with optional deployments on Vercel or Netlify.
+- **Serverless:** API routes deployed alongside the frontend stack.
+- **Ops:** Managed Firebase services minimize backend maintenance overhead.
+
+## Operational automation
+
+Daily spotlight scans query upcoming events across streaming platforms, normalize the data, and persist it in Firestore to power dashboard views and marketing highlights.

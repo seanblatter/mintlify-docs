@@ -97,7 +97,86 @@ Current operations include:
 - `createApiKey`, `revokeApiKey`
 - `createWebhookSubscription`, `updateWebhookSubscription`, `deleteWebhookSubscription`
 
-GraphQL schema and SBOM artifacts are maintained internally and can be shared on request.
+See `docs/graphql-schema.graphql` for the executable SDL.
+
+```graphql
+"""
+Executable GraphQL schema exposed by POST /api/graphql.
+
+This schema is intentionally scoped to currently implemented server behavior:
+- runtimeConfig query (public)
+- apiKeys + webhookSubscriptions queries (API key required)
+- API key and webhook subscription mutations (API key required)
+"""
+
+type RuntimeConfig {
+  relayUrl: String!
+  captionsRelayUrl: String!
+  rtmpIngestUrl: String!
+  appBaseUrl: String!
+  publicApiKey: String!
+}
+
+type ApiKey {
+  id: ID!
+  label: String!
+  prefix: String!
+  createdAt: String
+  lastUsedAt: String
+  revokedAt: String
+}
+
+type WebhookSubscription {
+  id: ID!
+  url: String!
+  events: [String!]!
+  description: String!
+  enabled: Boolean!
+  createdAt: String
+  updatedAt: String
+}
+
+type CreateApiKeyPayload {
+  key: String!
+  keyId: ID!
+  keys: [ApiKey!]!
+}
+
+type WebhookSubscriptionPayload {
+  subscription: WebhookSubscription!
+  secret: String
+}
+
+type Query {
+  runtimeConfig: RuntimeConfig!
+  apiKeys: [ApiKey!]!
+  webhookSubscriptions: [WebhookSubscription!]!
+}
+
+type Mutation {
+  createApiKey(label: String!): CreateApiKeyPayload!
+  revokeApiKey(keyId: ID!): [ApiKey!]!
+
+  createWebhookSubscription(
+    url: String!
+    events: [String!]!
+    description: String
+    secret: String
+  ): WebhookSubscriptionPayload!
+
+  updateWebhookSubscription(
+    subscriptionId: ID!
+    url: String
+    events: [String!]
+    description: String
+    enabled: Boolean
+    rotateSecret: Boolean
+    secret: String
+  ): WebhookSubscriptionPayload!
+
+  deleteWebhookSubscription(subscriptionId: ID!): Boolean!
+}
+```
 
 ## Next steps
 

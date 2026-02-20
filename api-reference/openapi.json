@@ -1,58 +1,53 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
+    "title": "Lettuce Stream API",
+    "description": "OpenAPI subset used by the API reference endpoint examples.",
     "version": "1.0.0"
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
+      "url": "https://api.lettuce-stream.com"
     }
   ],
   "paths": {
-    "/plants": {
+    "/api/runtime-config": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
+        "summary": "Get runtime configuration",
+        "description": "Returns public runtime configuration values used by client integrations.",
+        "responses": {
+          "200": {
+            "description": "Runtime configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuntimeConfig"
+                }
+              }
             }
+          }
+        }
+      }
+    },
+    "/api/api-keys": {
+      "get": {
+        "summary": "List API keys",
+        "description": "Returns API keys for the authenticated user.",
+        "security": [
+          {
+            "bearerAuth": []
           }
         ],
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "API keys",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Plant"
+                    "$ref": "#/components/schemas/ApiKey"
                   }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -60,35 +55,64 @@
         }
       },
       "post": {
-        "description": "Creates a new plant in the store",
+        "summary": "Create API key",
+        "description": "Creates a new API key for the authenticated user.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
-          "description": "Plant to add to the store",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/CreateApiKeyRequest"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
-            "description": "plant response",
+            "description": "Newly created key and refreshed key list",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/CreateApiKeyResponse"
                 }
               }
             }
-          },
-          "400": {
-            "description": "unexpected error",
+          }
+        }
+      },
+      "delete": {
+        "summary": "Revoke API key",
+        "description": "Revokes an API key and returns the updated key list.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeApiKeyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated API key list",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApiKey"
+                  }
                 }
               }
             }
@@ -96,57 +120,35 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
+    "/api/webhooks/subscriptions": {
+      "post": {
+        "summary": "Create webhook subscription",
+        "description": "Creates a webhook subscription for the authenticated user.",
+        "security": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
+            "bearerAuth": []
           }
         ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
         "requestBody": {
-          "description": "Plant added to the store",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/CreateWebhookSubscriptionRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
+            "description": "Webhook subscription and optional secret",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookSubscriptionResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -154,54 +156,175 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "RuntimeConfig": {
         "type": "object",
+        "required": [
+          "relayUrl",
+          "captionsRelayUrl",
+          "rtmpIngestUrl",
+          "appBaseUrl",
+          "publicApiKey"
+        ],
         "properties": {
-          "name": {
-            "description": "The name of the plant",
+          "relayUrl": {
             "type": "string"
           },
-          "tag": {
-            "description": "Tag to specify the type",
+          "captionsRelayUrl": {
+            "type": "string"
+          },
+          "rtmpIngestUrl": {
+            "type": "string"
+          },
+          "appBaseUrl": {
+            "type": "string"
+          },
+          "publicApiKey": {
             "type": "string"
           }
         }
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
+      "ApiKey": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "prefix"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
           },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
+          "label": {
+            "type": "string"
+          },
+          "prefix": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "lastUsedAt": {
+            "type": "string"
+          },
+          "revokedAt": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateApiKeyRequest": {
+        "type": "object",
+        "required": [
+          "label"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateApiKeyResponse": {
+        "type": "object",
+        "required": [
+          "key",
+          "keyId",
+          "keys"
+        ],
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "keyId": {
+            "type": "string"
+          },
+          "keys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiKey"
             }
           }
-        ]
+        }
       },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
+      "RevokeApiKeyRequest": {
         "type": "object",
+        "required": [
+          "keyId"
+        ],
         "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
+          "keyId": {
+            "type": "string"
+          }
+        }
+      },
+      "WebhookSubscription": {
+        "type": "object",
+        "required": [
+          "id",
+          "url",
+          "events",
+          "description",
+          "enabled"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
           },
-          "message": {
+          "url": {
+            "type": "string"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateWebhookSubscriptionRequest": {
+        "type": "object",
+        "required": [
+          "url",
+          "events"
+        ],
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          }
+        }
+      },
+      "WebhookSubscriptionResponse": {
+        "type": "object",
+        "required": [
+          "subscription"
+        ],
+        "properties": {
+          "subscription": {
+            "$ref": "#/components/schemas/WebhookSubscription"
+          },
+          "secret": {
             "type": "string"
           }
         }

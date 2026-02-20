@@ -54,37 +54,6 @@
           }
         }
       },
-      "post": {
-        "summary": "Create API key",
-        "description": "Creates a new API key for the authenticated user.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateApiKeyRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Newly created key and refreshed key list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateApiKeyResponse"
-                }
-              }
-            }
-          }
-        }
-      },
       "delete": {
         "summary": "Revoke API key",
         "description": "Revokes an API key and returns the updated key list.",
@@ -146,6 +115,27 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/WebhookSubscriptionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/spotlights/list": {
+      "get": {
+        "summary": "List active spotlights",
+        "description": "Returns currently active spotlight items.",
+        "responses": {
+          "200": {
+            "description": "Active spotlights",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Spotlight"
+                  }
                 }
               }
             }
@@ -328,6 +318,35 @@
             "type": "string"
           }
         }
+      },
+      "Spotlight": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "platform",
+          "url",
+          "startsAt"
+        ]
       }
     },
     "securitySchemes": {

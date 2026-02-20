@@ -1,33 +1,108 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: API overview
+description: A high-level look at Lettuce Stream APIs.
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
-
-## Welcome
-
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
-
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+Lettuce Stream APIs are organized around REST conventions and use JSON for request and response payloads.
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+Use a bearer token with every request:
 
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
 ```
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Base URL
+
+```
+https://api.lettuce-stream.com
+```
+
+## API catalog
+
+The following endpoints are available today. Unless noted, endpoints live under the base URL above.
+
+### Core & configuration
+
+| Endpoint | Methods | Purpose |
+| --- | --- | --- |
+| `/api/runtime-config` | `GET` | Return public runtime configuration (relay URL, app base URL, public API key). |
+| `/api/api-keys` | `GET`, `POST`, `DELETE` | List, create, or revoke API keys tied to a user. |
+
+### Billing & onboarding
+
+| Endpoint | Methods | Purpose |
+| --- | --- | --- |
+| `/api/create-payment-intent` | `POST` | Create a Stripe payment intent for plan checkout. |
+| `/api/create-seat-addon-intent` | `POST` | Create a Stripe payment intent for seat add-ons. |
+| `/api/cancel-subscription` | `POST` | Cancel a Stripe subscription. |
+| `/api/send-invite-email` | `POST` | Send an organization invitation email. |
+
+### Webhooks
+
+| Endpoint | Methods | Purpose |
+| --- | --- | --- |
+| `/api/webhooks/subscriptions` | `GET`, `POST`, `PATCH`, `DELETE` | Manage webhook subscriptions. |
+
+### Streaming status & spotlights
+
+| Endpoint | Methods | Purpose |
+| --- | --- | --- |
+| `/api/status/is-live` | `POST` | Check whether a channel or broadcast is live. |
+| `/api/spotlights/list` | `GET` | List active spotlights. |
+| `/api/spotlights/ready` | `GET` | Confirm spotlight readiness. |
+
+### OAuth
+
+| Endpoint | Methods | Purpose |
+| --- | --- | --- |
+| `/api/oauth/kick-start` | `POST` | Start Kick OAuth flow. |
+| `/api/oauth/kick-callback` | `GET` | Handle Kick OAuth callback. |
+| `/api/oauth/twitch-start` | `POST` | Start Twitch OAuth flow. |
+| `/api/oauth/twitch-callback` | `GET` | Handle Twitch OAuth callback. |
+| `/api/oauth/youtube-start` | `POST` | Start YouTube OAuth flow. |
+| `/api/oauth/youtube-callback` | `GET` | Handle YouTube OAuth callback. |
+| `/api/oauth/linkedin-start` | `POST` | Start LinkedIn OAuth flow. |
+| `/api/oauth/linkedin-callback` | `GET` | Handle LinkedIn OAuth callback. |
+| `/api/oauth/disconnect` | `POST` | Disconnect a linked OAuth account. |
+| `/api/linkedin/start` | `POST` | LinkedIn OAuth start alias. |
+| `/api/linkedin/callback` | `GET` | LinkedIn OAuth callback alias. |
+
+### YouTube
+
+| Endpoint | Methods | Purpose |
+| --- | --- | --- |
+| `/api/youtube/resolve-channel` | `GET` | Resolve a YouTube channel based on input. |
+| `/api/youtube/analytics` | `POST` | Fetch analytics for a YouTube broadcast. |
+| `/api/youtube/broadcast-status` | `POST` | Read the current broadcast status. |
+| `/api/youtube/scheduled-list` | `POST` | List scheduled YouTube broadcasts. |
+| `/api/youtube/scheduled-create` | `POST` | Create a scheduled YouTube broadcast. |
+| `/api/youtube/scheduled-update` | `POST` | Update a scheduled YouTube broadcast. |
+| `/api/youtube/start-broadcast` | `POST` | Start a YouTube broadcast. |
+| `/api/youtube/transition-broadcast` | `POST` | Transition a YouTube broadcast state. |
+
+## GraphQL
+
+A working GraphQL endpoint is available at:
+
+```
+POST /api/graphql
+```
+
+Current operations include:
+
+- `runtimeConfig`
+- `apiKeys` and `webhookSubscriptions`
+- `createApiKey`, `revokeApiKey`
+- `createWebhookSubscription`, `updateWebhookSubscription`, `deleteWebhookSubscription`
+
+See `docs/graphql-schema.graphql` for the executable SDL.
+
+## SBOM
+
+The latest Software Bill of Materials is available in [docs/SBOM.md](docs/SBOM.md). It inventories direct dependencies from the root and web-app lockfiles and was last generated on 2026-02-18 (UTC).
+
+## Next steps
+
+- Build your first integration using the webhook guide.

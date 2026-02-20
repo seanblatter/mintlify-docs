@@ -1,0 +1,66 @@
+<style>
+  .stage-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 0.75rem;
+    align-items: start;
+  }
+
+  .stage-captions-card {
+    inline-size: clamp(24rem, 46vw, 40rem);
+    max-inline-size: calc(100% - 1.5rem);
+    min-inline-size: 0;
+    overflow: hidden;
+    border: 1px solid #d9d9d9;
+    border-radius: 0.75rem;
+    background: #fff;
+  }
+
+  .stage-captions-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid #ececec;
+  }
+
+  .captions-transcript {
+    max-block-size: 14rem;
+    overflow: auto;
+    padding: 0.75rem 0.9rem;
+  }
+
+  .captions-transcript-entry {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .captions-transcript-meta {
+    color: #656565;
+    font-size: 0.8rem;
+  }
+
+  .captions-transcript-text {
+    color: #121212;
+    line-height: 1.45;
+    word-wrap: break-word;
+  }
+</style>
+
+<div class="stage-shell">
+  <div class="stage-captions-card" id="captionsStageCard" aria-hidden="false" data-drop-active="false">
+    <div class="stage-captions-header">
+      <strong id="stageCardTitle">Stage card · Notes</strong>
+      <span class="stage-captions-status" id="captionsStageStatus">Equipped: Notes</span>
+    </div>
+    <div class="captions-transcript" id="stageCardContent" aria-live="polite">
+      <div class="captions-transcript-entry">
+        <div class="captions-transcript-meta"><span>Notes</span></div>
+        <div class="captions-transcript-text">No notes yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <button type="button">Stage controls</button>
+  <button type="button">Stage actions</button>
+</div>

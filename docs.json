@@ -62,7 +62,7 @@
             "group": "Endpoint examples",
             "pages": [
               "api-reference/endpoint/get-runtime-config",
-              "api-reference/endpoint/create-api-key",
+              "api-reference/endpoint/list-active-spotlights",
               "api-reference/endpoint/revoke-api-key",
               "api-reference/endpoint/create-webhook-subscription"
             ]

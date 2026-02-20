@@ -61,10 +61,10 @@
           {
             "group": "Endpoint examples",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-reference/endpoint/get-runtime-config",
+              "api-reference/endpoint/create-api-key",
+              "api-reference/endpoint/revoke-api-key",
+              "api-reference/endpoint/create-webhook-subscription"
             ]
           }
         ]
